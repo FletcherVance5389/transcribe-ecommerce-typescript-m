@@ -1,0 +1,8 @@
+{
+  "name": "transcribe-ecommerce-typescript-m",
+  "private": true,
+  "type": "module",
+  "scripts": {"typecheck": "tsc --noEmit", "test": "tsx src/order_decision.test.ts", "start": "tsx src/order_service.ts"},
+  "dependencies": {"openai": "^4.0.0", "zod": "^3.0.0"},
+  "devDependencies": {"tsx": "^4.0.0", "typescript": "^5.0.0"}
+}
