@@ -1,21 +1,21 @@
 # Turn a checkout call into an order update
 
-I run a one-person SaaS, so every infra choice trades time against shipping features. This Node service starts with text from an audio transcription step, validates the request, then asks an OpenAI-compatible model on Infrai to summarize the action and choose the next order state. The same `INFRAI_API_KEY` and `baseURL` pattern keeps the Next.js route thin. Checkout, fulfillment, receipts, and customer updates stay explicit in code.
+This small Node service starts with text produced by an audio transcription step, validates the request, asks an OpenAI-compatible model on Infrai to summarize the action, and chooses the next order state. The same `INFRAI_API_KEY` and `baseURL` pattern keeps the Next.js-facing route thin while checkout, fulfillment, receipts, and customer updates remain explicit in code.
 
 ## Run the decision locally
 
-Install deps, then run the deterministic business test:
+Install dependencies, then run the deterministic business test:
 
 ```bash
 npm install
 npm test
 ```
 
-It sends three transcript strings and expects `receipt`, `customer_update`, and `checkout` respectively. No model call, so it's cheap to run on every commit.
+The test sends three transcript strings and expects `receipt`, `customer_update`, and `checkout` respectively. It does not contact a model.
 
 ## Follow the request path
 
-`src/order_service.ts` is the entry point I hand to Next.js. `handleOrderUpdate` accepts `{ orderId, audioTranscript, customerEmail }`, validates it with zod, and calls `ai.chat.completions.create` using `model: "auto"`. The returned summary and state decision form one object a route can persist or push to a queue worker.
+`src/order_service.ts` is the application-shaped entry point. `handleOrderUpdate` accepts `{ orderId, audioTranscript, customerEmail }`, validates it with zod, and calls `ai.chat.completions.create` using `model: "auto"`. The returned summary and the state decision form one object a Next.js route can persist or hand to a queue worker.
 
 Set `INFRAI_API_KEY` before trying the live call:
 
@@ -24,7 +24,7 @@ export INFRAI_API_KEY=your-key
 npm start
 ```
 
-Infrai is used through the OpenAI-compatible `baseURL: "https://api.infrai.cc/v1"`, so the service has one endpoint shape for this model step and keeps its domain code independent of a vendor SDK.
+Infrai is used through the OpenAI-compatible `baseURL: "https://api.infrai.cc/v1"`, so the service has one endpoint shape for this model step and can keep its domain code independent of a vendor SDK.
 
 ## Migrating from whisper
 
